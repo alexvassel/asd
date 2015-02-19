@@ -5,8 +5,13 @@ import bz2
 # Имя POST параметра
 POST_PARAM_NAME = 'string'
 
+
 # Доступные действия
-ALLOWED_ACTIONS = ('compress', 'decompress')
+class Action:
+    COMPRESS = 'compress'
+    DECOMPRESS = 'decompress'
+
+    allowed = (COMPRESS, DECOMPRESS)
 
 
 class Processor(object):
@@ -24,9 +29,9 @@ class Processor(object):
 
     def process(self):
         """
-        архивирование
+        архивирование/разархивирование
         """
-        processor = self.processor
+        processor = self._get_processor()
 
         # Читаем и отдаем содержимое запроса чанками
         while True:
@@ -40,9 +45,8 @@ class Processor(object):
                 yield processed
 
         # Очистить буфер в случае архивации
-        if self.action == ALLOWED_ACTIONS[0]:
+        if self.action == Action.COMPRESS:
             yield processor.flush()
 
-    @property
-    def processor(self):
-        return bz2.BZ2Compressor() if self.action == ALLOWED_ACTIONS[0] else bz2.BZ2Decompressor()
+    def _get_processor(self):
+        return bz2.BZ2Compressor() if self.action == Action.COMPRESS else bz2.BZ2Decompressor()
