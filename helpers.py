@@ -31,7 +31,7 @@ class Processor(object):
         processor = (bz2.BZ2Compressor() if self.action == Action.COMPRESS
                      else bz2.BZ2Decompressor())
 
-        # Выбираем метод в зависимости от действия
+        # Processor method depends on action
         action = getattr(processor, self.action)
 
         # Reading request and responding by chunks
