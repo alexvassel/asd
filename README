@@ -1,6 +1,6 @@
-фреймворк - Bottle
+framework - Bottle
 
-два адреса, оба в качество POST параметра принимают аргумент 'string' и отдают закодированный (или раскодированный) ответ:
+two urls, both accept 'string' POST argument and response with compressed/decompressed string:
 
-1. /process/compress/ - архивация
-2. /process/decompress/ - разархивация
+1. /process/compress/ - compression
+2. /process/decompress/ - decompression
