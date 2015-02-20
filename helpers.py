@@ -2,11 +2,10 @@
 
 import bz2
 
-# Имя POST параметра
 POST_PARAM_NAME = 'string'
 
 
-# Доступные действия
+# Available request actions
 class Action:
     COMPRESS = 'compress'
     DECOMPRESS = 'decompress'
@@ -16,37 +15,36 @@ class Action:
 
 class Processor(object):
     """
-    Класс для архивирования, разархивирования строк
-    Принимает в конструкторе объект, который предоставляет методы, характерные для файла
+    Compress/decompress of a file-like object content
     """
 
-    # Размер чанка
     CHUNK_SIZE = 32
 
-    def __init__(self, file_object, action):
-        self.buffer = file_object
+    def __init__(self, buffer_object, action):
+        self.buffer = buffer_object
         self.action = action
 
     def process(self):
         """
-        архивирование/разархивирование
+        Compression/decompression
         """
-        processor = self._get_processor()
+        processor = (bz2.BZ2Compressor() if self.action == Action.COMPRESS
+                     else bz2.BZ2Decompressor())
 
-        # Читаем и отдаем содержимое запроса чанками
+        # Выбираем метод в зависимости от действия
+        action = getattr(processor, self.action)
+
+        # Reading request and responding by chunks
         while True:
             block = self.buffer.read(self.CHUNK_SIZE)
             if not block:
                 break
-            # Архивация/разархивация
-            processed = getattr(processor, self.action)(block)
+            # Actual compression/decompression
+            processed = action(block)
 
             if processed:
                 yield processed
 
-        # Очистить буфер в случае архивации
+        # Flush compression buffer
         if self.action == Action.COMPRESS:
             yield processor.flush()
-
-    def _get_processor(self):
-        return bz2.BZ2Compressor() if self.action == Action.COMPRESS else bz2.BZ2Decompressor()

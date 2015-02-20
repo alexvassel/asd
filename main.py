@@ -7,7 +7,7 @@ from bottle import run, request, post, HTTPError, BaseRequest, response
 from helpers import Processor, POST_PARAM_NAME, Action
 
 
-# Ограничение bottle на тело запроса
+# Bottle request body limit
 BaseRequest.MEMFILE_MAX = 1024 * 1024
 
 
@@ -23,7 +23,7 @@ def process(action):
     response.content_type = ('text/plain' if action == Action.DECOMPRESS
                              else ' application/x-bzip2')
 
-    # IOError означает, что Processor получил для обработки не bz2 строку
+    # IOError means that Processor object got not bz2 for decompressing
     try:
         for block in processor.process():
             yield block
